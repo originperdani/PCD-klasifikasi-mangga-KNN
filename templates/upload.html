@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Gambar - KNN Segmentation</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body style="min-height: 100vh; display: flex; flex-direction: column">
+    <header>
+      <h1>Upload Gambar Buah untuk Segmentasi KNN</h1>
+    </header>
+
+    <section style="flex-grow: 1">
+      <form method="POST" enctype="multipart/form-data">
+        <label for="image">Pilih Gambar Buah:</label>
+        <input type="file" name="image" id="image" accept="image/*" required />
+        <br /><br />
+        <p>
+          Aplikasi ini akan melakukan segmentasi KNN untuk mendeteksi dan
+          mengklasifikasikan buah dalam gambar.
+        </p>
+        <button type="submit" class="button">Proses Gambar</button>
+      </form>
+
+      {% if original_image %}
+      <section>
+        <h2>Hasil Pengolahan Citra</h2>
+        <div class="results">
+          <div>
+            <h3>Citra RGB Asli</h3>
+            <img
+              src="{{ url_for('static', filename='uploads/' + original_image) }}"
+              alt="Citra Asli"
+            />
+          </div>
+          <div>
+            <h3>Citra RGB Hasil Segmentasi</h3>
+            <img
+              src="{{ url_for('static', filename='results/' + segmented_image) }}"
+              alt="Citra Segmentasi"
+            />
+          </div>
+          <div>
+            <h3>Mask Objek</h3>
+            <img
+              src="{{ url_for('static', filename='results/' + mask_image) }}"
+              alt="Mask"
+            />
+          </div>
+        </div>
+
+        <div>
+          <h3>Ekstraksi Fitur RGB</h3>
+          {% if fitur_rgb %}
+          <p>R mean: {{ fitur_rgb[0] | round(2) }}</p>
+          <p>G mean: {{ fitur_rgb[1] | round(2) }}</p>
+          <p>B mean: {{ fitur_rgb[2] | round(2) }}</p>
+          {% else %}
+          <p>Tidak ada fitur (segmentasi gagal).</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <h3>Hasil Klasifikasi</h3>
+          {% if predicted_label %}
+          <p>Tingkat kematangan: <strong>{{ predicted_label }}</strong></p>
+          {% else %}
+          <p>Tidak ada hasil klasifikasi.</p>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
+    </section>
+
+    <footer
+      style="
+        margin-top: auto;
+        text-align: center;
+        padding: 20px 10px;
+        background: linear-gradient(
+          135deg,
+          #0d1b2a 0%,
+          #1b263b 50%,
+          #0d1b2a 100%
+        );
+        color: white;
+      "
+    >
+      <a href="{{ url_for('index') }}" class="button-secondary"
+        >Kembali ke Home</a
+      >
+    </footer>
+  </body>
+</html>
