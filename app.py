@@ -1,5 +1,8 @@
 # app.py
 import os
+import base64
+from io import BytesIO
+import tempfile
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -8,13 +11,25 @@ from knn_model import klasifikasi_dan_segmentasi
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
-RESULT_FOLDER = os.path.join('static', 'results')
+TMP_DIR = (
+    os.environ.get('TMPDIR')
+    or os.environ.get('TEMP')
+    or os.environ.get('TMP')
+    or tempfile.gettempdir()
+)
+UPLOAD_FOLDER = os.path.join(TMP_DIR, 'uploads')
+RESULT_FOLDER = os.path.join(TMP_DIR, 'results')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def to_data_uri(pil_img, fmt='PNG'):
+    buf = BytesIO()
+    pil_img.save(buf, format=fmt)
+    b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+    return f"data:image/{fmt.lower()};base64,{b64}"
 
 
 def allowed_file(filename):
@@ -57,20 +72,18 @@ def upload():
             klasifikasi_dan_segmentasi(pil_image)
 
         seg_img = Image.fromarray(img_seg_np)
-        seg_filename = f"seg_{filename}"
-        seg_path = os.path.join(RESULT_FOLDER, seg_filename)
-        seg_img.save(seg_path)
+        seg_data_uri = to_data_uri(seg_img, fmt='PNG')
 
         mask_img_pil = Image.fromarray(mask_np)
-        mask_filename = f"mask_{filename}"
-        mask_path = os.path.join(RESULT_FOLDER, mask_filename)
-        mask_img_pil.save(mask_path)
+        mask_data_uri = to_data_uri(mask_img_pil, fmt='PNG')
+
+        original_data_uri = to_data_uri(pil_image.convert('RGB'), fmt='PNG')
 
         return render_template(
             'upload.html',
-            original_image=filename,
-            segmented_image=seg_filename,
-            mask_image=mask_filename,
+            original_data_uri=original_data_uri,
+            segmented_data_uri=seg_data_uri,
+            mask_data_uri=mask_data_uri,
             fitur_rgb=fitur_rgb.tolist(),
             predicted_label=pred_label
         )
@@ -81,4 +94,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=True, use_reloader=False)
