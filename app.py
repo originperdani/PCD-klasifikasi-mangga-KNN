@@ -9,7 +9,13 @@ from PIL import Image
 
 from knn_model import klasifikasi_dan_segmentasi
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(
+    __name__,
+    static_folder=os.path.join(BASE_DIR, 'static'),
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_url_path='/static'
+)
 
 TMP_DIR = (
     os.environ.get('TMPDIR')
