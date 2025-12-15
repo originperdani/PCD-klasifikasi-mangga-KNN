@@ -26,21 +26,30 @@
         <button type="submit" class="button">Proses Gambar</button>
       </form>
 
-      {% if original_data_uri %}
+      {% if original_image %}
       <section>
         <h2>Hasil Pengolahan Citra</h2>
         <div class="results">
           <div>
             <h3>Citra RGB Asli</h3>
-            <img src="{{ original_data_uri }}" alt="Citra Asli" />
+            <img
+              src="{{ url_for('static', filename='uploads/' + original_image) }}"
+              alt="Citra Asli"
+            />
           </div>
           <div>
             <h3>Citra RGB Hasil Segmentasi</h3>
-            <img src="{{ segmented_data_uri }}" alt="Citra Segmentasi" />
+            <img
+              src="{{ url_for('static', filename='results/' + segmented_image) }}"
+              alt="Citra Segmentasi"
+            />
           </div>
           <div>
             <h3>Mask Objek</h3>
-            <img src="{{ mask_data_uri }}" alt="Mask" />
+            <img
+              src="{{ url_for('static', filename='results/' + mask_image) }}"
+              alt="Mask"
+            />
           </div>
         </div>
 
