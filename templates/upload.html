@@ -29,16 +29,22 @@
       {% if original_image %}
       <section>
         <h2>Hasil Pengolahan Citra</h2>
+        <p>Format Gambar: {{ 'Grayscale' if is_grayscale else 'RGB' }}</p>
         <div class="results">
           <div>
-            <h3>Citra RGB Asli</h3>
+            <h3>
+              {{ 'Citra Grayscale Asli' if is_grayscale else 'Citra RGB Asli' }}
+            </h3>
             <img
               src="{{ url_for('static', filename='uploads/' + original_image) }}"
               alt="Citra Asli"
             />
           </div>
           <div>
-            <h3>Citra RGB Hasil Segmentasi</h3>
+            <h3>
+              {{ 'Citra Grayscale Hasil Segmentasi' if is_grayscale else 'Citra
+              RGB Hasil Segmentasi' }}
+            </h3>
             <img
               src="{{ url_for('static', filename='results/' + segmented_image) }}"
               alt="Citra Segmentasi"
@@ -54,12 +60,18 @@
         </div>
 
         <div>
-          <h3>Ekstraksi Fitur RGB</h3>
-          {% if fitur_rgb %}
-          <p>R mean: {{ fitur_rgb[0] | round(2) }}</p>
-          <p>G mean: {{ fitur_rgb[1] | round(2) }}</p>
-          <p>B mean: {{ fitur_rgb[2] | round(2) }}</p>
+          <h3>
+            {{ 'Ekstraksi Fitur Grayscale' if is_grayscale else 'Ekstraksi Fitur
+            RGB' }}
+          </h3>
+          {% if fitur_values %} {% if is_grayscale %}
+          <p>Gray mean: {{ fitur_values[0] | round(2) }}</p>
+          <p>Gray std: {{ fitur_values[1] | round(2) }}</p>
           {% else %}
+          <p>R mean: {{ fitur_values[0] | round(2) }}</p>
+          <p>G mean: {{ fitur_values[1] | round(2) }}</p>
+          <p>B mean: {{ fitur_values[2] | round(2) }}</p>
+          {% endif %} {% else %}
           <p>Tidak ada fitur (segmentasi gagal).</p>
           {% endif %}
         </div>

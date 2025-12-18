@@ -53,7 +53,7 @@ def upload():
 
         pil_image = Image.open(original_path)
 
-        img_np, img_seg_np, mask_np, fitur_rgb, pred_label = \
+        img_np, img_seg_np, mask_np, fitur_vals, pred_label, is_gray = \
             klasifikasi_dan_segmentasi(pil_image)
 
         seg_img = Image.fromarray(img_seg_np)
@@ -71,8 +71,9 @@ def upload():
             original_image=filename,
             segmented_image=seg_filename,
             mask_image=mask_filename,
-            fitur_rgb=fitur_rgb.tolist(),
-            predicted_label=pred_label
+            fitur_values=fitur_vals.tolist(),
+            predicted_label=pred_label,
+            is_grayscale=is_gray
         )
     else:  # GET request
         return render_template('upload.html')
